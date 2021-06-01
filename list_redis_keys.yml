@@ -1,0 +1,15 @@
+---
+- hosts: "localhost"
+  user: root
+  gather_facts: no
+
+  tasks:
+
+  - name: Listar chaves Redis 
+    command: redis-cli -a "{{ pw_redis }}" --cluster call "{{ host_redis }}":6379 keys *"{{ padrao_redis }}"*
+    register: chave
+    ignore_errors: true
+
+  - name: Resultado
+    debug: var="item.value"
+    with_dict: "{{ chave }}"

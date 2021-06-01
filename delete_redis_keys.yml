@@ -1,0 +1,17 @@
+---
+- hosts: "localhost"
+  user: root
+  gather_facts: no
+
+  vars:
+    keys_file: "{{ lookup('file', '{{ key_file }}').splitlines() }}"
+
+  tasks:
+
+  - name: Deletar chaves Redis 
+    command: redis-cli -a "{{ pw_redis }}" --cluster call "{{ host_redis }}":6379 eval "for _,k in ipairs(redis.call('keys','*{{ item }}*')) do redis.call('del',k) end" 0
+    with_items: "{{ keys_file }}"
+    ignore_errors: true
+
+  - debug:
+      msg: "Chave(s) deletada(s): {{ keys_file }}"
